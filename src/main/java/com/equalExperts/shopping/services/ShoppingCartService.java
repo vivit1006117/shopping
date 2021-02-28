@@ -11,17 +11,16 @@ import java.util.Map;
 
 @Service
 public class ShoppingCartService {
-    private CartService cartService;
     private ProductService productService;
 
+    Cart cart;
     @Autowired
-    public ShoppingCartService(CartService cartService, ProductService productService) {
-        this.cartService = cartService;
+    public ShoppingCartService(ProductService productService) {
         this.productService = productService;
+        cart  = new Cart();
     }
 
     public CartResponse addItemToCart(Long id, Long quantity) {
-        Cart cart = cartService.getCart();
         Product product = productService.getProduct(id);
         cart.addProduct(id, quantity);
         return createCartResponse(cart);

@@ -1,12 +1,14 @@
 package com.equalExperts.shopping.responses;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.equalExperts.shopping.utils.Converter.roundDecimalTo2Points;
+
 public class CartResponse {
     private List<CartProduct> cartProducts = new ArrayList<>();
-    private String totalPrice;
+    private double totalPrice;
+    private double salesTaxAmount ;
 
     public CartResponse(){}
 
@@ -19,13 +21,22 @@ public class CartResponse {
         this.cartProducts.add(cartProduct);
     }
 
-    public String getTotalPrice() {
+    public double getTotalPrice() {
         return totalPrice;
     }
 
     public void setTotalPrice(double totalPrice) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        df.setRoundingMode(RoundingMode.UP);
-        this.totalPrice = df.format(totalPrice);
+        setSalesTaxAmount(totalPrice);
+        totalPrice += this.salesTaxAmount;
+        this.totalPrice = roundDecimalTo2Points(totalPrice);;
+    }
+
+    public double getSalesTaxAmount() {
+        return salesTaxAmount;
+    }
+
+    private void setSalesTaxAmount(double salesTaxAmount) {
+        double totalSales = salesTaxAmount * 12.5 / 100;
+        this.salesTaxAmount = roundDecimalTo2Points(totalSales);
     }
 }

@@ -1,6 +1,5 @@
 package com.equalExperts.shopping.services;
 
-import com.equalExperts.shopping.domain.Cart;
 import com.equalExperts.shopping.domain.Product;
 import com.equalExperts.shopping.responses.CartResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,22 +12,19 @@ import static org.mockito.Mockito.when;
 
 class ShoppingCartServiceTest {
     private ShoppingCartService shoppingCartService;
-    private CartService cartService;
     private ProductService productService;
 
     @BeforeEach
     public void setUp() {
-        cartService = Mockito.mock(CartService.class);
         productService = Mockito.mock(ProductService.class);
-        shoppingCartService = new ShoppingCartService(cartService, productService);
+        shoppingCartService = new ShoppingCartService(productService);
     }
 
     @Test
     void ShouldAddItemToCart() {
-        when(cartService.getCart()).thenCallRealMethod();;
         when(productService.getProduct(anyLong())).thenReturn(new Product(20L, "Dove Soap", 39.99));
         CartResponse cartResponse = shoppingCartService.addItemToCart(20L, 5L);
-        assertEquals("199.95", cartResponse.getTotalPrice());
+        assertEquals(224.94, cartResponse.getTotalPrice());
         assertEquals(39.99, cartResponse.getCartProducts().get(0).getProduct().getPrice());
         assertEquals(5, cartResponse.getCartProducts().get(0).getQuantity());
         assertEquals("Dove Soap", cartResponse.getCartProducts().get(0).getProduct().getName());
@@ -36,14 +32,30 @@ class ShoppingCartServiceTest {
 
     @Test
     void ShouldAdditionalAddItemToCart() {
-        Cart cart = new Cart();
-        cart.addProduct(20L, 5L);
-        when(cartService.getCart()).thenReturn(cart);
         when(productService.getProduct(anyLong())).thenReturn(new Product(20L, "Dove Soap", 39.99));
+        shoppingCartService.addItemToCart(20L, 5L);
         CartResponse cartResponse = shoppingCartService.addItemToCart(20L, 3L);
-        assertEquals("319.92", cartResponse.getTotalPrice());
+        assertEquals(359.91, cartResponse.getTotalPrice());
         assertEquals(39.99, cartResponse.getCartProducts().get(0).getProduct().getPrice());
         assertEquals(8, cartResponse.getCartProducts().get(0).getQuantity());
         assertEquals("Dove Soap", cartResponse.getCartProducts().get(0).getProduct().getName());
+    }
+
+    @Test
+    void ShouldAdd2ItemsToCart() {
+        when(productService.getProduct(20L)).thenReturn(new Product(20L, "Dove Soap", 39.99));
+        when(productService.getProduct(30L)).thenReturn(new Product(30L, "Axe Deo", 99.99));
+        shoppingCartService.addItemToCart(20L, 2L);
+        CartResponse cartResponse = shoppingCartService.addItemToCart(30L, 2L);
+        assertEquals(39.99, cartResponse.getCartProducts().get(0).getProduct().getPrice());
+        assertEquals(2, cartResponse.getCartProducts().get(0).getQuantity());
+        assertEquals("Dove Soap", cartResponse.getCartProducts().get(0).getProduct().getName());
+
+        assertEquals(99.99, cartResponse.getCartProducts().get(1).getProduct().getPrice());
+        assertEquals(2, cartResponse.getCartProducts().get(1).getQuantity());
+        assertEquals("Axe Deo", cartResponse.getCartProducts().get(1).getProduct().getName());
+
+        assertEquals(35.00, cartResponse.getSalesTaxAmount());
+        assertEquals(314.96, cartResponse.getTotalPrice());
     }
 }
