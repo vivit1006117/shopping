@@ -13,6 +13,10 @@ public class Cart {
     public Cart(){}
 
     public void addProduct(Long id, Long quantity) {
+        if (products.containsKey(id)) {
+            quantity += products.get(id);
+            products.remove(id);
+        }
         products.put(id, quantity);
     }
 

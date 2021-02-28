@@ -25,6 +25,7 @@ public class CartResponse {
 
     public void setTotalPrice(double totalPrice) {
         DecimalFormat df = new DecimalFormat("0.00");
+        df.setRoundingMode(RoundingMode.UP);
         this.totalPrice = df.format(totalPrice);
     }
 }

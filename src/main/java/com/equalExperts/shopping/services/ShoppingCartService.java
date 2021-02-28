@@ -24,6 +24,10 @@ public class ShoppingCartService {
         Cart cart = cartService.getCart();
         Product product = productService.getProduct(id);
         cart.addProduct(id, quantity);
+        return createCartResponse(cart);
+    }
+
+    private CartResponse createCartResponse(Cart cart) {
         CartResponse cartResponse = new CartResponse();
         double total = 0.0;
         for (Map.Entry<Long, Long> set : cart.getProduct().entrySet()) {

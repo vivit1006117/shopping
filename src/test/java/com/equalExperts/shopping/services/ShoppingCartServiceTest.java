@@ -1,5 +1,6 @@
 package com.equalExperts.shopping.services;
 
+import com.equalExperts.shopping.domain.Cart;
 import com.equalExperts.shopping.domain.Product;
 import com.equalExperts.shopping.responses.CartResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,19 @@ class ShoppingCartServiceTest {
         assertEquals("199.95", cartResponse.getTotalPrice());
         assertEquals(39.99, cartResponse.getCartProducts().get(0).getProduct().getPrice());
         assertEquals(5, cartResponse.getCartProducts().get(0).getQuantity());
+        assertEquals("Dove Soap", cartResponse.getCartProducts().get(0).getProduct().getName());
+    }
+
+    @Test
+    void ShouldAdditionalAddItemToCart() {
+        Cart cart = new Cart();
+        cart.addProduct(20L, 5L);
+        when(cartService.getCart()).thenReturn(cart);
+        when(productService.getProduct(anyLong())).thenReturn(new Product(20L, "Dove Soap", 39.99));
+        CartResponse cartResponse = shoppingCartService.addItemToCart(20L, 3L);
+        assertEquals("319.92", cartResponse.getTotalPrice());
+        assertEquals(39.99, cartResponse.getCartProducts().get(0).getProduct().getPrice());
+        assertEquals(8, cartResponse.getCartProducts().get(0).getQuantity());
         assertEquals("Dove Soap", cartResponse.getCartProducts().get(0).getProduct().getName());
     }
 }
